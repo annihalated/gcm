@@ -6,15 +6,21 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 var paths []string
 
 func Log(log_name string) bool {
 	paths := get_paths()
-	fmt.Printf("%v", paths)
-	destination := ".gcm" + "/" + log_name + "/"
+	destination := ".gcm/" + log_name + "/"
 	duplicate(paths, destination)
+	path_string := strings.Join(paths, ", ")
+	t := time.Now()
+	log_update := t.String() + " - " + log_name + ": " + path_string + "\n"
+	UpdateLogFile(log_update)
+	fmt.Printf("Current version saved as %s", log_update)
 	return true
 }
 
@@ -53,4 +59,18 @@ func duplicate(paths []string, destination string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func UpdateLogFile(log string) error {
+	f, err := os.OpenFile(".gcm/log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer f.Close()
+	if _, err := f.WriteString(log); err != nil {
+		fmt.Println(err)
+	}
+
+	return nil
+
 }
