@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 )
 
+var paths []string
+
 func Log(log_name string) bool {
 	paths := get_paths()
 	fmt.Printf("%v", paths)
@@ -15,8 +17,6 @@ func Log(log_name string) bool {
 	duplicate(paths, destination)
 	return true
 }
-
-var paths []string
 
 func get_paths() []string {
 	filepath.WalkDir(".", visit)
