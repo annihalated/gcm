@@ -14,7 +14,7 @@ var paths []string
 
 func Log(log_name string) bool {
 	paths := get_paths()
-	destination := ".gcm/" + log_name + "/"
+	destination := ".gcm/snapshots/" + log_name + "/"
 	duplicate(paths, destination)
 	path_string := strings.Join(paths, ", ")
 	t := time.Now()
@@ -47,7 +47,7 @@ func duplicate(paths []string, destination string) (bool, error) {
 
 		defer srcFile.Close()
 
-		if stat.IsDir() == true {
+		if stat.IsDir() {
 			os.Mkdir(dstPath, os.ModePerm)
 		} else {
 			os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
