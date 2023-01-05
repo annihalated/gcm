@@ -37,12 +37,10 @@ func duplicate(paths []string, destination string) (bool, error) {
 		srcPath := path
 		dstPath := filepath.Join(destination, srcPath)
 
-		// Open the source file
 		srcFile, _ := os.Open(srcPath)
 
 		defer srcFile.Close()
 
-		// Create the destination folder if it doesn't exist
 		if stat.IsDir() == true {
 			os.Mkdir(dstPath, os.ModePerm)
 		} else {
@@ -52,11 +50,6 @@ func duplicate(paths []string, destination string) (bool, error) {
 			io.Copy(dstFile, srcFile)
 
 		}
-
-		// Create the destination file
-
-		// Copy the contents of the source file to the destination file
-
 	}
 
 	return true, nil
