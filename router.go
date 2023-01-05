@@ -15,7 +15,7 @@ func Route() {
 	case "init":
 		cli.Init()
 	case "snap":
-		if val, _ := cli.Exists(".gcm/"); val == false {
+		if val, _ := cli.PathExists(".gcm/"); val == false {
 			fmt.Println("Please initialise a gcm repository first")
 			os.Exit(3)
 		}
@@ -29,7 +29,7 @@ func Route() {
 		cli.MakeSnapshot(os.Args[2])
 
 	case "log":
-		if val, _ := cli.Exists(".gcm/"); val == false {
+		if val, _ := cli.PathExists(".gcm/"); val == false {
 			fmt.Println("Please initialise a gcm repository first")
 			os.Exit(3)
 		}
