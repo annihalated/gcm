@@ -14,19 +14,19 @@ func Route() {
 	switch os.Args[1] {
 	case "init":
 		cli.Init()
-	case "log":
+	case "snap":
 		if val, _ := cli.Exists(".gcm/"); val == false {
 			fmt.Println("Please initialise a gcm repository first")
 			os.Exit(3)
 		}
 
 		if len(os.Args) <= 2 {
-			fmt.Println("Please name your logged copy of the repository as an argument")
-			fmt.Println("For example: ./gcm log v1")
+			fmt.Println("Please name your snapshot of the repository as an argument")
+			fmt.Println("For example: ./gcm snap v1")
 			os.Exit(3)
 		}
 
-		cli.Log(os.Args[2])
+		cli.MakeSnapshot(os.Args[2])
 	default:
 		fmt.Println(command_not_valid_message)
 	}

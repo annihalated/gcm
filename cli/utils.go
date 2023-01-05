@@ -17,7 +17,6 @@ func Exists(path string) (bool, error) {
 }
 
 func Remove(s []string, r string) []string {
-	// Use a loop to build a new slice with only the elements that do not contain the substring "r"
 	var newSlice []string
 	for _, v := range s {
 		if !strings.Contains(v, r) {

@@ -12,6 +12,7 @@ import (
 )
 
 var paths []string
+var snapshots []Snapshot
 
 type Snapshot struct {
 	Name  string
@@ -19,7 +20,7 @@ type Snapshot struct {
 	Time  string
 }
 
-func Log(log_name string) bool {
+func MakeSnapshot(snapshot_name string) bool {
 	filepath.WalkDir(".", visit)
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
@@ -28,7 +29,7 @@ func Log(log_name string) bool {
 	for _, path := range paths {
 		stat, _ := os.Stat(path)
 		srcPath := path
-		dstPath := filepath.Join(".gcm/snapshots/"+log_name+"/", srcPath)
+		dstPath := filepath.Join(".gcm/snapshots/"+snapshot_name+"/", srcPath)
 
 		srcFile, _ := os.Open(srcPath)
 
@@ -45,16 +46,14 @@ func Log(log_name string) bool {
 		}
 	}
 
-	fmt.Printf("Current version saved as %s", log_name)
-
-	var snapshots []Snapshot
+	fmt.Printf("Current version saved as %s", snapshot_name)
 
 	t := time.Now()
 	jsonFile, _ := os.Open(".gcm/gcm.json")
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	json.Unmarshal(byteValue, &snapshots)
 	snapshots = append(snapshots, Snapshot{
-		Name:  log_name,
+		Name:  snapshot_name,
 		Paths: paths,
 		Time:  t.String(),
 	})
