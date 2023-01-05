@@ -7,6 +7,7 @@ import (
 
 func Init() {
 	os.Mkdir(".gcm", os.ModePerm)
+	os.Mkdir(".gcm/snapshots/", os.ModePerm)
 	os.Create(".gcm/gcm.json")
 	fmt.Println("Initialized gcm repository in this directory")
 }

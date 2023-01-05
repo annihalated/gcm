@@ -72,5 +72,4 @@ func UpdateLogFile(log string) error {
 	}
 
 	return nil
-
 }
