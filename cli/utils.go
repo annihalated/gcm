@@ -2,9 +2,10 @@ package cli
 
 import (
 	"os"
+	"strings"
 )
 
-func exists(path string) (bool, error) {
+func Exists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -15,11 +16,13 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
-func remove(s []string, r string) []string {
-	for i, v := range s {
-		if v == r {
-			return append(s[:i], s[i+1:]...)
+func Remove(s []string, r string) []string {
+	// Use a loop to build a new slice with only the elements that do not contain the substring "r"
+	var newSlice []string
+	for _, v := range s {
+		if !strings.Contains(v, r) {
+			newSlice = append(newSlice, v)
 		}
 	}
-	return s
+	return newSlice
 }
