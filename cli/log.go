@@ -1,26 +1,43 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
 var paths []string
 
+type Snapshot struct {
+	Name  string
+	Paths []string
+	Time  string
+}
+
 func Log(log_name string) bool {
 	paths := get_paths()
 	destination := ".gcm/snapshots/" + log_name + "/"
 	duplicate(paths, destination)
-	path_string := strings.Join(paths, ", ")
+	fmt.Printf("Current version saved as %s", log_name)
+
+	var snapshots []Snapshot
+
 	t := time.Now()
-	log_update := t.String() + " - " + log_name + ": " + path_string + "\n"
-	UpdateLogFile(log_update)
-	fmt.Printf("Current version saved as %s", log_update)
+	jsonFile, _ := os.Open(".gcm/gcm.json")
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &snapshots)
+	snapshots = append(snapshots, Snapshot{
+		Name:  log_name,
+		Paths: paths,
+		Time:  t.String(),
+	})
+	data, _ := json.Marshal(snapshots)
+	_ = ioutil.WriteFile(".gcm/gcm.json", data, 0644)
 	return true
 }
 
@@ -59,17 +76,4 @@ func duplicate(paths []string, destination string) (bool, error) {
 	}
 
 	return true, nil
-}
-
-func UpdateLogFile(log string) error {
-	f, err := os.OpenFile(".gcm/log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer f.Close()
-	if _, err := f.WriteString(log); err != nil {
-		fmt.Println(err)
-	}
-
-	return nil
 }
