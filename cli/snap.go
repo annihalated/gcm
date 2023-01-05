@@ -14,12 +14,6 @@ import (
 var paths []string
 var snapshots []Snapshot
 
-type Snapshot struct {
-	Name  string
-	Paths []string
-	Time  string
-}
-
 func MakeSnapshot(snapshot_name string) bool {
 	filepath.WalkDir(".", visit)
 	paths = Remove(paths, ".gcm")

@@ -27,6 +27,14 @@ func Route() {
 		}
 
 		cli.MakeSnapshot(os.Args[2])
+
+	case "log":
+		if val, _ := cli.Exists(".gcm/"); val == false {
+			fmt.Println("Please initialise a gcm repository first")
+			os.Exit(3)
+		}
+
+		cli.DisplayLog()
 	default:
 		fmt.Println(command_not_valid_message)
 	}
