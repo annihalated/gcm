@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -14,7 +13,7 @@ import (
 var paths []string
 var snapshots []Snapshot
 
-func MakeSnapshot(snapshot_name string) bool {
+func MakeSnapshot(snapshotName string) bool {
 	filepath.WalkDir(".", visit)
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
@@ -23,7 +22,7 @@ func MakeSnapshot(snapshot_name string) bool {
 	for _, path := range paths {
 		stat, _ := os.Stat(path)
 		srcPath := path
-		dstPath := filepath.Join(".gcm/snapshots/"+snapshot_name+"/", srcPath)
+		dstPath := filepath.Join(".gcm/snapshots/"+snapshotName+"/", srcPath)
 
 		srcFile, _ := os.Open(srcPath)
 
@@ -34,26 +33,33 @@ func MakeSnapshot(snapshot_name string) bool {
 		} else {
 			os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
 			dstFile, _ := os.Create(dstPath)
-			defer dstFile.Close()
 			io.Copy(dstFile, srcFile)
-
 		}
 	}
 
-	fmt.Printf("Current version saved as %s", snapshot_name)
+	fmt.Printf("Current version saved as %s", snapshotName)
 
 	t := time.Now()
-	jsonFile, _ := os.Open(".gcm/gcm.json")
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	_, byteValue := ReadLog()
 	json.Unmarshal(byteValue, &snapshots)
+	AppendSnapshotLog(snapshotName, t)
+	return true
+}
+
+func AppendSnapshotLog(snapshotName string, t time.Time) {
 	snapshots = append(snapshots, Snapshot{
-		Name:  snapshot_name,
+		Name:  snapshotName,
 		Paths: paths,
 		Time:  t.String(),
 	})
 	data, _ := json.Marshal(snapshots)
-	_ = ioutil.WriteFile(".gcm/gcm.json", data, 0644)
-	return true
+	_ = os.WriteFile(".gcm/gcm.json", data, 0644)
+}
+
+func ReadLog() (error, []byte) {
+	jsonFile, _ := os.Open(".gcm/gcm.json")
+	byteValue, _ := io.ReadAll(jsonFile)
+	return nil, byteValue
 }
 
 func visit(path string, di fs.DirEntry, err error) error {
