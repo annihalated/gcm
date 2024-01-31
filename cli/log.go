@@ -20,7 +20,7 @@ func DisplayLog() bool {
 	json.Unmarshal(jsonFile, &snapshots)
 
 	for _, snapshot := range snapshots {
-		fmt.Println(snapshot.Name, " - ", snapshot.Time, " - ", snapshot.Paths)
+		fmt.Println(snapshot.Time, " - ", snapshot.Name, " - ", snapshot.Parent)
 	}
 
 	return true
