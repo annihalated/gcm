@@ -50,10 +50,11 @@ func MakeSnapshot() bool {
 }
 
 func AppendSnapshotLog(snapshotName string, t time.Time) {
+	formattedTime := t.Format("Mon Jan 2 15:04:05 MST 2006")
 	snapshots = append(snapshots, Snapshot{
 		Name:   snapshotName,
 		Paths:  paths,
-		Time:   t.String(),
+		Time:   formattedTime,
 		Parent: GetHEADString(),
 	})
 	data, _ := json.Marshal(snapshots)
@@ -88,5 +89,5 @@ func GetHEADString() string {
 		return str
 	}
 
-	return str
+	return string("BASE")
 }
