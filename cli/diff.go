@@ -3,11 +3,12 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sergi/go-diff/diffmatchpatch"
 	"os"
 	"path/filepath"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 var diffSnapshots []Snapshot
