@@ -8,14 +8,15 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-    "github.com/google/uuid"
+
+	"github.com/google/uuid"
 )
 
 var paths []string
 var snapshots []Snapshot
 
 func MakeSnapshot() bool {
-    snapshotName := uuid.NewString()
+	snapshotName := uuid.NewString()
 	filepath.WalkDir(".", visit)
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
@@ -50,12 +51,14 @@ func MakeSnapshot() bool {
 
 func AppendSnapshotLog(snapshotName string, t time.Time) {
 	snapshots = append(snapshots, Snapshot{
-		Name:  snapshotName,
-		Paths: paths,
-		Time:  t.String(),
+		Name:   snapshotName,
+		Paths:  paths,
+		Time:   t.String(),
+		Parent: GetHEADString(),
 	})
 	data, _ := json.Marshal(snapshots)
 	_ = os.WriteFile(".gcm/gcm.json", data, 0644)
+	_ = os.WriteFile(".gcm/HEAD", []byte(snapshotName), 0644)
 }
 
 func ReadLog() (error, []byte) {
@@ -67,4 +70,23 @@ func ReadLog() (error, []byte) {
 func visit(path string, di fs.DirEntry, err error) error {
 	paths = append(paths, path)
 	return nil
+}
+
+func GetHEADString() string {
+	b, err := os.ReadFile(".gcm/HEAD")
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	str := string(b)
+
+	if str != "" {
+		err = uuid.Validate(str)
+		if err != nil {
+			panic(err)
+		}
+		return str
+	}
+
+	return str
 }
