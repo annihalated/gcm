@@ -8,12 +8,14 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+    "github.com/google/uuid"
 )
 
 var paths []string
 var snapshots []Snapshot
 
-func MakeSnapshot(snapshotName string) bool {
+func MakeSnapshot() bool {
+    snapshotName := uuid.NewString()
 	filepath.WalkDir(".", visit)
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
