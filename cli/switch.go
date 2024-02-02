@@ -25,5 +25,4 @@ func SwitchHEAD(direction string) bool {
 
 	fmt.Printf("%s is not a valid commit", direction)
 	return false
-
 }
