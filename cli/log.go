@@ -28,5 +28,7 @@ func DisplayLog() bool {
 		fmt.Printf("%s - %s - from %s\n", red(snapshot.Time), green(snapshot.Name), blue(snapshot.Parent))
 	}
 
+	fmt.Printf("\n")
+
 	return true
 }
