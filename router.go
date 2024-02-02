@@ -32,7 +32,7 @@ func Route() {
 		checkForInit()
 
 		if len(os.Args) != 3 {
-			fmt.Printf("You have the wrong number of aguments.")
+			fmt.Printf("You have the wrong number of arguments.")
 			os.Exit(3)
 		}
 
