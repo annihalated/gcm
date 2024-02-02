@@ -12,6 +12,7 @@ func SwitchHEAD(direction string) bool {
 
 	if direction == GetHEADString() {
 		fmt.Printf("HEAD is already at %s", direction)
+		return false
 	}
 	hsc := GetHEADString()
 
