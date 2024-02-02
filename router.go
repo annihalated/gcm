@@ -34,6 +34,19 @@ func Route() {
 		}
 
 		cli.DisplayLog()
+	case "switch":
+		if val, _ := cli.PathExists(".gcm/"); val == false {
+			fmt.Println("Please initialise a gcm repository first")
+			os.Exit(3)
+		}
+
+		if len(os.Args) != 3 {
+			fmt.Printf("You have the wrong number of aguments.")
+			os.Exit(3)
+		}
+
+		cli.SwitchHEAD(os.Args[2])
+
 	case "diff":
 		if val, _ := cli.PathExists(".gcm/"); val == false {
 			fmt.Println("Please initialise a gcm repository first")
