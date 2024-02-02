@@ -25,7 +25,7 @@ func DisplayLog() bool {
 	green := color.New(color.FgGreen).SprintFunc()
 
 	for _, snapshot := range snapshots {
-		fmt.Printf("%s - %s - from %s\n", red(snapshot.Name), green(snapshot.Time), blue(snapshot.Parent))
+		fmt.Printf("%s - %s - from %s\n", red(snapshot.Time), green(snapshot.Name), blue(snapshot.Parent))
 	}
 
 	return true
