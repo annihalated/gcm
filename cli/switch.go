@@ -19,7 +19,7 @@ func SwitchHEAD(direction string) bool {
 	for _, snapshot := range snapshots {
 		if snapshot.Name == direction {
 			_ = os.WriteFile(".gcm/HEAD", []byte(snapshot.Name), 0644)
-			fmt.Printf("HEAD changed: %s -> %s", hsc, direction)
+			fmt.Printf("HEAD changed: %s -> %s\n", hsc, direction)
 			return true
 		}
 	}
