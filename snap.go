@@ -62,7 +62,7 @@ func AppendSnapshotLog(snapshotName string, t time.Time) {
 		Name:   snapshotName,
 		Paths:  paths,
 		Time:   formattedTime,
-		Parent: GetHEADString(),
+		Parent: HEAD(),
 	})
 	data, _ := json.Marshal(snapshots)
 	_ = os.WriteFile(".gcm/gcm.json", data, 0644)
@@ -80,7 +80,7 @@ func visit(path string, di fs.DirEntry, err error) error {
 	return nil
 }
 
-func GetHEADString() string {
+func HEAD() string {
 	b, err := os.ReadFile(".gcm/HEAD")
 	if err != nil {
 		fmt.Print(err)

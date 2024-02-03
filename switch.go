@@ -10,11 +10,11 @@ func SwitchHEAD(direction string) bool {
 	jsonFile, _ := os.ReadFile(".gcm/gcm.json")
 	json.Unmarshal(jsonFile, &snapshots)
 
-	if direction == GetHEADString() {
+	if direction == HEAD() {
 		fmt.Printf("HEAD is already at %s", direction)
 		return false
 	}
-	hsc := GetHEADString()
+	hsc := HEAD()
 
 	for _, snapshot := range snapshots {
 		if snapshot.Name == direction {
