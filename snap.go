@@ -79,22 +79,3 @@ func visit(path string, di fs.DirEntry, err error) error {
 	paths = append(paths, path)
 	return nil
 }
-
-func HEAD() string {
-	b, err := os.ReadFile(".gcm/HEAD")
-	if err != nil {
-		fmt.Print(err)
-	}
-
-	str := string(b)
-
-	if str != "" {
-		err = uuid.Validate(str)
-		if err != nil {
-			panic(err)
-		}
-		return str
-	}
-
-	return string("BASE")
-}

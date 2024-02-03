@@ -4,7 +4,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/google/uuid"
 )
+
+func HEAD() string {
+	b, err := os.ReadFile(".gcm/HEAD")
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	str := string(b)
+
+	if str != "" {
+		err = uuid.Validate(str)
+		if err != nil {
+			panic(err)
+		}
+		return str
+	}
+
+	return string("BASE")
+}
 
 func SwitchHEAD(direction string) bool {
 	jsonFile, _ := os.ReadFile(".gcm/gcm.json")
