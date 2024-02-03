@@ -8,14 +8,6 @@ import (
 	"github.com/fatih/color"
 )
 
-func PrettySnapshot(data interface{}) (string, error) {
-	val, err := json.MarshalIndent(data, "", "    ")
-	if err != nil {
-		return "", err
-	}
-	return string(val), nil
-}
-
 func DisplayLog() bool {
 	jsonFile, _ := os.ReadFile(".gcm/gcm.json")
 	json.Unmarshal(jsonFile, &snapshots)

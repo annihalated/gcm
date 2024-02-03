@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"os"
 	"strings"
 )
@@ -24,4 +25,12 @@ func Remove(s []string, r string) []string {
 		}
 	}
 	return newSlice
+}
+
+func PrettySnapshot(data interface{}) (string, error) {
+	val, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		return "", err
+	}
+	return string(val), nil
 }
