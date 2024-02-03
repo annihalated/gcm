@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gcm/cli"
 	"os"
 )
 
@@ -13,7 +12,7 @@ func Route() {
 	}
 	switch os.Args[1] {
 	case "init":
-		cli.Init()
+		Init()
 	case "snap":
 		checkForInit()
 
@@ -22,12 +21,12 @@ func Route() {
 			os.Exit(3)
 		}
 
-		cli.MakeSnapshot()
+		MakeSnapshot()
 
 	case "log":
 		checkForInit()
 
-		cli.DisplayLog()
+		DisplayLog()
 	case "switch":
 		checkForInit()
 
@@ -36,12 +35,12 @@ func Route() {
 			os.Exit(3)
 		}
 
-		cli.SwitchHEAD(os.Args[2])
+		SwitchHEAD(os.Args[2])
 
 	case "diff":
 		checkForInit()
 
-		cli.Diff(os.Args[2], os.Args[3])
+		Diff(os.Args[2], os.Args[3])
 	default:
 		fmt.Println(command_not_valid_message)
 	}
@@ -51,7 +50,7 @@ var welcome_message string = "Welcome to GCM! Please enter a command, like ./gcm
 var command_not_valid_message string = "That wasn't a valid command"
 
 func checkForInit() bool {
-	if val, _ := cli.PathExists(".gcm/"); val == false {
+	if val, _ := PathExists(".gcm/"); val == false {
 		fmt.Println("please initialise a gcm repository first")
 		os.Exit(3)
 	}
