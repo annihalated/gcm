@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"time"
@@ -24,7 +23,7 @@ var snapshots []Snapshot
 
 func MakeSnapshot() bool {
 	snapshotName := uuid.NewString()
-	filepath.WalkDir(".", visit)
+	filepath.WalkDir(".", Visit)
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
 	paths = paths[1:]
@@ -75,7 +74,10 @@ func ReadLog() (error, []byte) {
 	return nil, byteValue
 }
 
-func visit(path string, di fs.DirEntry, err error) error {
-	paths = append(paths, path)
-	return nil
+func PrettySnapshot(data interface{}) (string, error) {
+	val, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		return "", err
+	}
+	return string(val), nil
 }

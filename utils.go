@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"io/fs"
 	"os"
 	"strings"
 )
@@ -27,10 +27,7 @@ func Remove(s []string, r string) []string {
 	return newSlice
 }
 
-func PrettySnapshot(data interface{}) (string, error) {
-	val, err := json.MarshalIndent(data, "", "    ")
-	if err != nil {
-		return "", err
-	}
-	return string(val), nil
+func Visit(path string, di fs.DirEntry, err error) error {
+	paths = append(paths, path)
+	return nil
 }
