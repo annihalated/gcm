@@ -12,6 +12,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type Snapshot struct {
+	Name   string
+	Paths  []string
+	Time   string
+	Parent string
+}
+
 var paths []string
 var snapshots []Snapshot
 
