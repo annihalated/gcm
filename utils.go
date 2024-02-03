@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/fs"
 	"os"
 	"strings"
 )
@@ -25,9 +24,4 @@ func Remove(s []string, r string) []string {
 		}
 	}
 	return newSlice
-}
-
-func Visit(path string, di fs.DirEntry, err error) error {
-	paths = append(paths, path)
-	return nil
 }
