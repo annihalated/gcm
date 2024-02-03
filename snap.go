@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -22,7 +23,7 @@ type Snapshot struct {
 // CreateIndex returns a slice after recursively walking through
 // the directory tree at and below a given path. It omits the ".gcm" and
 // the ".git" paths.
-func CreateIndex(path string) []string {
+func CreateIndex(path string) ([]string, error) {
 	var paths []string
 	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
 		paths = append(paths, path)
@@ -31,28 +32,54 @@ func CreateIndex(path string) []string {
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
 	paths = paths[1:]
-	return paths
+	return paths, nil
 }
 
 func MakeSnapshot() bool {
-	paths := CreateIndex(".")
+	paths, err := CreateIndex(".")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	snapshotName := uuid.NewString()
 
 	for _, path := range paths {
-		stat, _ := os.Stat(path)
+		stat, err := os.Stat(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		srcPath := path
 		dstPath := filepath.Join(".gcm/snapshots/"+snapshotName+"/", srcPath)
 
-		srcFile, _ := os.Open(srcPath)
+		srcFile, err := os.Open(srcPath)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		defer srcFile.Close()
 
 		if stat.IsDir() {
-			os.Mkdir(dstPath, os.ModePerm)
+			err = os.Mkdir(dstPath, os.ModePerm)
+			if err != nil {
+				log.Fatal(err)
+			}
 		} else {
-			os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
-			dstFile, _ := os.Create(dstPath)
-			io.Copy(dstFile, srcFile)
+			err = os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			dstFile, err := os.Create(dstPath)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			_, err = io.Copy(dstFile, srcFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+
 		}
 	}
 
@@ -70,23 +97,48 @@ func AppendSnapshotLog(snapshotName string, paths []string, t string, parent str
 		Time:   t,
 		Parent: HEAD(),
 	})
-	data, _ := json.Marshal(snapshots)
-	_ = os.WriteFile(".gcm/gcm.json", data, 0644)
-	_ = os.WriteFile(".gcm/HEAD", []byte(snapshotName), 0644)
+
+	data, err := json.Marshal(snapshots)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.WriteFile(".gcm/gcm.json", data, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.WriteFile(".gcm/HEAD", []byte(snapshotName), 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func PrettySnapshot(data interface{}) (string, error) {
 	val, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
-		return "", err
+		log.Fatal(err)
 	}
 	return string(val), nil
 }
 
 func getSnapshots() []Snapshot {
 	var snapshots []Snapshot
-	jsonFile, _ := os.Open(".gcm/gcm.json")
-	byteValue, _ := io.ReadAll(jsonFile)
-	json.Unmarshal(byteValue, &snapshots)
+
+	jsonFile, err := os.Open(".gcm/gcm.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	byteValue, err := io.ReadAll(jsonFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = json.Unmarshal(byteValue, &snapshots)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return snapshots
 }
