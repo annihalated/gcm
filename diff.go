@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,11 +13,8 @@ import (
 var diffSnapshots []Snapshot
 
 // Diff uses sergi/go-diff to produce a diff between files that are present in two snapshots.
-// Very imperfect at the moment, doesn't show completely new files, and is utterly ugly and unworkable. But progress!
 func Diff(from string, to string) bool {
-	jsonFile, _ := os.ReadFile(".gcm/gcm.json")
-	json.Unmarshal(jsonFile, &snapshots)
-
+	snapshots := getSnapshots()
 	for _, snapshot := range snapshots {
 		if snapshot.Name == from {
 			fmt.Println("Your FROM snapshot is " + snapshot.Name)

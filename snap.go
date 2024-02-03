@@ -19,7 +19,6 @@ type Snapshot struct {
 }
 
 var paths []string
-var snapshots []Snapshot
 
 func MakeSnapshot() bool {
 	snapshotName := uuid.NewString()
@@ -49,13 +48,12 @@ func MakeSnapshot() bool {
 	fmt.Printf("Current version saved as %s", snapshotName)
 
 	t := time.Now()
-	_, byteValue := ReadLog()
-	json.Unmarshal(byteValue, &snapshots)
 	AppendSnapshotLog(snapshotName, t)
 	return true
 }
 
 func AppendSnapshotLog(snapshotName string, t time.Time) {
+	snapshots := getSnapshots()
 	formattedTime := t.Format("Mon Jan 2 15:04:05 MST 2006")
 	snapshots = append(snapshots, Snapshot{
 		Name:   snapshotName,
@@ -68,16 +66,18 @@ func AppendSnapshotLog(snapshotName string, t time.Time) {
 	_ = os.WriteFile(".gcm/HEAD", []byte(snapshotName), 0644)
 }
 
-func ReadLog() (error, []byte) {
-	jsonFile, _ := os.Open(".gcm/gcm.json")
-	byteValue, _ := io.ReadAll(jsonFile)
-	return nil, byteValue
-}
-
 func PrettySnapshot(data interface{}) (string, error) {
 	val, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		return "", err
 	}
 	return string(val), nil
+}
+
+func getSnapshots() []Snapshot {
+	var snapshots []Snapshot
+	jsonFile, _ := os.Open(".gcm/gcm.json")
+	byteValue, _ := io.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &snapshots)
+	return snapshots
 }

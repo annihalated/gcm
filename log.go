@@ -1,16 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/fatih/color"
 )
 
 func DisplayLog() bool {
-	jsonFile, _ := os.ReadFile(".gcm/gcm.json")
-	json.Unmarshal(jsonFile, &snapshots)
+	snapshots := getSnapshots()
 
 	red := color.New(color.FgRed).SprintFunc()
 	blue := color.New(color.FgBlue).SprintFunc()

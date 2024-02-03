@@ -1,13 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/google/uuid"
 )
 
+// HEAD() gets the current HEAD value from the file
+// and checks that it is a valid UUID.
 func HEAD() string {
 	b, err := os.ReadFile(".gcm/HEAD")
 	if err != nil {
@@ -28,9 +29,7 @@ func HEAD() string {
 }
 
 func SwitchHEAD(direction string) bool {
-	jsonFile, _ := os.ReadFile(".gcm/gcm.json")
-	json.Unmarshal(jsonFile, &snapshots)
-
+	snapshots := getSnapshots()
 	if direction == HEAD() {
 		fmt.Printf("HEAD is already at %s", direction)
 		return false
