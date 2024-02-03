@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"time"
@@ -18,14 +19,24 @@ type Snapshot struct {
 	Parent string
 }
 
-var paths []string
-
-func MakeSnapshot() bool {
-	snapshotName := uuid.NewString()
-	filepath.WalkDir(".", Visit)
+// CreateIndex returns a slice after recursively walking through
+// the directory tree at and below a given path. It omits the ".gcm" and
+// the ".git" paths.
+func CreateIndex(path string) []string {
+	var paths []string
+	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+		paths = append(paths, path)
+		return nil
+	})
 	paths = Remove(paths, ".gcm")
 	paths = Remove(paths, ".git")
 	paths = paths[1:]
+	return paths
+}
+
+func MakeSnapshot() bool {
+	paths := CreateIndex(".")
+	snapshotName := uuid.NewString()
 
 	for _, path := range paths {
 		stat, _ := os.Stat(path)
@@ -45,20 +56,18 @@ func MakeSnapshot() bool {
 		}
 	}
 
+	t := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
+	AppendSnapshotLog(snapshotName, paths, t, HEAD())
 	fmt.Printf("Current version saved as %s", snapshotName)
-
-	t := time.Now()
-	AppendSnapshotLog(snapshotName, t)
 	return true
 }
 
-func AppendSnapshotLog(snapshotName string, t time.Time) {
+func AppendSnapshotLog(snapshotName string, paths []string, t string, parent string) {
 	snapshots := getSnapshots()
-	formattedTime := t.Format("Mon Jan 2 15:04:05 MST 2006")
 	snapshots = append(snapshots, Snapshot{
 		Name:   snapshotName,
 		Paths:  paths,
-		Time:   formattedTime,
+		Time:   t,
 		Parent: HEAD(),
 	})
 	data, _ := json.Marshal(snapshots)
