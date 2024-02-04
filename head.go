@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -51,14 +52,52 @@ func SwitchHEAD(direction string) bool {
 }
 
 func ReconstructDirTree(snapshotName string) (bool, error) {
-	wd_path, err := CreateIndex(".")
+	wd_index, err := CreateIndex(".")
 	if err != nil {
 		log.Fatal(err)
 	}
+	path_to_snapshot := ".gcm/snapshots/" + snapshotName + "/"
+	snapshot_index, err := CreateIndex(path_to_snapshot)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", wd_index)
+	fmt.Printf("%s", snapshot_index)
 
-	snapshot_path, err := CreateIndex(".gcm/snapshots/" + snapshotName)
-	fmt.Printf("%s\n", wd_path)
-	fmt.Printf("%s", snapshot_path)
+	for _, path := range wd_index {
+		err = os.RemoveAll(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	for _, path := range snapshot_index {
+		fileInfo, err := os.Stat(path)
+		path_without_prefix := strings.ReplaceAll(path, path_to_snapshot, "")
+		if err != nil {
+			log.Fatal(err)
+		}
+		if fileInfo.IsDir() {
+			os.Mkdir(path, os.ModePerm)
+		} else {
+			copy(path, "./"+path_without_prefix)
+		}
+	}
 
 	return true, nil
+}
+
+func checkErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func copy(src string, dst string) {
+	// Read all content of src to data, may cause OOM for a large file.
+	data, err := os.ReadFile(src)
+	checkErr(err)
+	// Write data to dst
+	err = os.WriteFile(dst, data, 0644)
+	checkErr(err)
 }

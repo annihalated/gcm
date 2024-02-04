@@ -25,19 +25,23 @@ type Snapshot struct {
 // CreateIndex returns a slice after recursively walking through
 // the directory tree at and below a given path. It omits the ".gcm" and
 // the ".git" paths.
-func CreateIndex(path string) ([]string, error) {
+func CreateIndex(target string) ([]string, error) {
 	var paths []string
-	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(target, func(path string, d fs.DirEntry, err error) error {
 		paths = append(paths, path)
 		return nil
 	})
-	paths = slices.DeleteFunc(paths, func(s string) bool {
-		if strings.Contains(s, ".gcm") || strings.Contains(s, ".git") {
-			return true
-		}
-		return false
-	})
-	paths = paths[1:]
+	if err != nil {
+		log.Fatal(err)
+	}
+	if target == "." {
+		paths = slices.DeleteFunc(paths, func(s string) bool {
+			if strings.Contains(s, ".gcm") || strings.Contains(s, ".git") {
+				return true
+			}
+			return false
+		})
+	}
 	return paths, nil
 }
 

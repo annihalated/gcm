@@ -47,6 +47,9 @@ func Route() {
 	case "diff":
 		checkForInit()
 		Diff(os.Args[2], os.Args[3])
+	case "head":
+		checkForInit()
+		fmt.Printf("%s", HEAD())
 
 	default:
 		fmt.Println(command_not_valid_message)
