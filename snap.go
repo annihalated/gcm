@@ -114,14 +114,6 @@ func AppendSnapshotLog(snapshotName string, paths []string, t string, parent str
 	}
 }
 
-func PrettySnapshot(data interface{}) (string, error) {
-	val, err := json.MarshalIndent(data, "", "    ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return string(val), nil
-}
-
 func getSnapshots() []Snapshot {
 	var snapshots []Snapshot
 
@@ -133,6 +125,10 @@ func getSnapshots() []Snapshot {
 	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if string(byteValue) == "" {
+		return []Snapshot{}
 	}
 
 	err = json.Unmarshal(byteValue, &snapshots)

@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	Route()
 }
 
@@ -57,11 +59,11 @@ func Route() {
 var welcome_message string = "Welcome to GCM! Please enter a command, like ./gcm init"
 var command_not_valid_message string = "That wasn't a valid command"
 
-func checkForInit() bool {
-	if val, _ := PathExists(".gcm/"); val == false {
-		fmt.Println("please initialise a gcm repository first")
+func checkForInit() (bool, error) {
+	_, err := os.Stat(".gcm/gcm.json")
+	if err != nil {
+		log.Fatal("gcm.json not found\nPlease run the init command first.")
 		os.Exit(3)
 	}
-
-	return true
+	return true, nil
 }
