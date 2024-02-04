@@ -40,7 +40,7 @@ func SwitchHEAD(direction string) bool {
 
 	for _, snapshot := range snapshots {
 		if snapshot.Name == direction {
-			_ = os.WriteFile(".gcm/HEAD", []byte(snapshot.Name), 0644)
+			_ = os.WriteFile(".gcm/HEAD", []byte(snapshot.Name), 0777)
 			fmt.Printf("HEAD changed: %s -> %s\n", hsc, direction)
 			ReconstructDirTree(direction)
 			return true
@@ -62,12 +62,15 @@ func ReconstructDirTree(snapshotName string) (bool, error) {
 		log.Fatal(err)
 	}
 	fmt.Printf("%s\n", wd_index)
-	fmt.Printf("%s", snapshot_index)
+	fmt.Printf("%s\n", snapshot_index)
 
 	for _, path := range wd_index {
-		err = os.RemoveAll(path)
-		if err != nil {
-			log.Fatal(err)
+		if path != "." && path != ".." {
+			err = os.RemoveAll(path)
+			if err != nil {
+				fmt.Printf("%s\n", path)
+				log.Fatal(err)
+			}
 		}
 	}
 
@@ -78,9 +81,9 @@ func ReconstructDirTree(snapshotName string) (bool, error) {
 			log.Fatal(err)
 		}
 		if fileInfo.IsDir() {
-			os.Mkdir(path, os.ModePerm)
+			os.Mkdir(path_without_prefix, 0777)
 		} else {
-			copy(path, "./"+path_without_prefix)
+			copy(path, path_without_prefix)
 		}
 	}
 
@@ -94,10 +97,8 @@ func checkErr(err error) {
 }
 
 func copy(src string, dst string) {
-	// Read all content of src to data, may cause OOM for a large file.
 	data, err := os.ReadFile(src)
 	checkErr(err)
-	// Write data to dst
-	err = os.WriteFile(dst, data, 0644)
+	err = os.WriteFile(dst, data, 0777)
 	checkErr(err)
 }
