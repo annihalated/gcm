@@ -10,10 +10,9 @@ import (
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
-var diffSnapshots []Snapshot
-
 // Diff uses sergi/go-diff to produce a diff between files that are present in two snapshots.
 func Diff(from string, to string) bool {
+	var diffSnapshots []Snapshot
 	snapshots := getSnapshots()
 	for _, snapshot := range snapshots {
 		if snapshot.Name == from {

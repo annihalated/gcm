@@ -109,7 +109,7 @@ func AppendSnapshotLog(snapshotName string, paths []string, t string, parent str
 		log.Fatal(err)
 	}
 
-	err = os.WriteFile(".gcm/gcm.json", data, 0644)
+	err = os.WriteFile(INDEX_PATH, data, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -123,7 +123,7 @@ func AppendSnapshotLog(snapshotName string, paths []string, t string, parent str
 func getSnapshots() []Snapshot {
 	var snapshots []Snapshot
 
-	jsonFile, err := os.Open(".gcm/gcm.json")
+	jsonFile, err := os.Open(INDEX_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}

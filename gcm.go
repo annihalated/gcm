@@ -20,7 +20,7 @@ func Route() {
 	case "init":
 		os.Mkdir(".gcm", os.ModePerm)
 		os.Mkdir(".gcm/snapshots/", os.ModePerm)
-		os.Create(".gcm/gcm.json")
+		os.Create(INDEX_PATH)
 		os.Create(".gcm/HEAD")
 		fmt.Println("Initialized gcm repository in this directory")
 
@@ -57,9 +57,9 @@ var welcome_message string = "Welcome to GCM! Please enter a command, like ./gcm
 var command_not_valid_message string = "That wasn't a valid command"
 
 func checkForInit() (bool, error) {
-	_, err := os.Stat(".gcm/gcm.json")
+	_, err := os.Stat(INDEX_PATH)
 	if err != nil {
-		log.Fatal("gcm.json not found\nPlease run the init command first.")
+		log.Fatal("Please run the init command first.")
 		os.Exit(3)
 	}
 	return true, nil
