@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,8 +31,12 @@ func CreateIndex(path string) ([]string, error) {
 		paths = append(paths, path)
 		return nil
 	})
-	paths = Remove(paths, ".gcm")
-	paths = Remove(paths, ".git")
+	paths = slices.DeleteFunc(paths, func(s string) bool {
+		if strings.Contains(s, ".gcm") || strings.Contains(s, ".git") {
+			return true
+		}
+		return false
+	})
 	paths = paths[1:]
 	return paths, nil
 }
