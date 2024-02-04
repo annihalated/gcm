@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/google/uuid"
@@ -40,10 +41,24 @@ func SwitchHEAD(direction string) bool {
 		if snapshot.Name == direction {
 			_ = os.WriteFile(".gcm/HEAD", []byte(snapshot.Name), 0644)
 			fmt.Printf("HEAD changed: %s -> %s\n", hsc, direction)
+			ReconstructDirTree(direction)
 			return true
 		}
 	}
 
 	fmt.Printf("%s is not a valid commit", direction)
 	return false
+}
+
+func ReconstructDirTree(snapshotName string) (bool, error) {
+	wd_path, err := CreateIndex(".")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	snapshot_path, err := CreateIndex(".gcm/snapshots/" + snapshotName)
+	fmt.Printf("%s\n", wd_path)
+	fmt.Printf("%s", snapshot_path)
+
+	return true, nil
 }
